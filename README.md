@@ -274,7 +274,7 @@ Would you like to run the runner as service? (Y/N) [press Enter for N] y
 User account to use for the service [press Enter for NT AUTHORITY\NETWORK SERVICE]
 ```
 
-Press Enter to use `NT AUTHORITY\NETWORK SERVICE`. The runner will be installed and started automatically.
+Press Enter to use `NT AUTHORITY\NETWORK SERVICE`. The runner will be installed and started automatically. This service will start even if the PC restarts (you can see it in **Services** under `services.msc`).
 
 ### Step 5 — Set PowerShell execution policy
 
