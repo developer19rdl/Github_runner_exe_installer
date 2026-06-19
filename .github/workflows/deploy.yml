@@ -58,5 +58,9 @@ jobs:
 
       - name: Start the newly installed EXE
         run: |
-          Start-Process -FilePath "C:\MyApp\your-app.exe"
+          # Temporarily unset the tracking ID so the runner doesn't kill the app when it finishes
+          $env:RUNNER_TRACKING_ID = ""
+          
+          # Start the app detached from this script
+          Start-Process -FilePath "C:\MyApp\your-app.exe" -WorkingDirectory "C:\MyApp" -WindowStyle Hidden
         shell: powershell
