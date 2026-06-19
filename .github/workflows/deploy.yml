@@ -49,7 +49,10 @@ jobs:
 
       - name: Copy the specific version EXE to the live folder
         run: |
-          # We use the $env:EXE_PATH variable we created in step 2
+          # 1. Create the MyApp folder if it does not exist yet
+          New-Item -ItemType Directory -Force -Path "C:\MyApp"
+          
+          # 2. We use the $env:EXE_PATH variable we created in step 2
           Copy-Item -Path $env:EXE_PATH -Destination "C:\MyApp\your-app.exe" -Force
         shell: powershell
 
