@@ -1,0 +1,53 @@
+name: Deploy Versioned EXE
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      # This is the magic rule: 
+      # It ONLY triggers the workflow if a file ending in .exe 
+      # is pushed inside the Build folder (or any version subfolder).
+      - 'Build/**/*.exe' 
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, windows] 
+
+    steps:
+      - name: Checkout latest code
+        uses: actions/checkout@v4
+
+      - name: Find the newest EXE in the version folders
+        id: find_exe
+        run: |
+          # Recursively search the Build folder for .exe files and pick the most recently modified one
+          $latestExe = Get-ChildItem -Path ".\Build" -Filter "*.exe" -Recurse | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          
+          if (-not $latestExe) {
+            Write-Error "Could not find any .exe files in the Build directory!"
+            exit 1
+          }
+          
+          Write-Host "Success! Deploying newest EXE: $($latestExe.FullName)"
+          
+          # Save this file path to an environment variable so the next steps know exactly what to copy
+          echo "EXE_PATH=$($latestExe.FullName)" >> $env:GITHUB_ENV
+        shell: powershell
+
+      - name: Stop the existing app on the server
+        run: |
+          # Replace 'your-app.exe' with the actual running process name
+          taskkill /F /IM your-app.exe || Write-Host "App was not running."
+        shell: powershell
+
+      - name: Copy the specific version EXE to the live folder
+        run: |
+          # We use the $env:EXE_PATH variable we created in step 2
+          Copy-Item -Path $env:EXE_PATH -Destination "C:\MyApp\your-app.exe" -Force
+        shell: powershell
+
+      - name: Start the newly installed EXE
+        run: |
+          Start-Process -FilePath "C:\MyApp\your-app.exe"
+        shell: powershell
