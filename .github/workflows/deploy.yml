@@ -9,6 +9,7 @@ on:
       # It ONLY triggers the workflow if a file ending in .exe 
       # is pushed inside the Build folder (or any version subfolder).
       - 'Build/**/*.exe' 
+  workflow_dispatch:
 
 jobs:
   deploy:
